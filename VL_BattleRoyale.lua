@@ -1,3 +1,6 @@
+-- TODO
+-- end match also when second last player leaves
+
 local pityshield = CV_RegisterVar({"br_pityshield", "Off", CV_NETVAR, CV_OnOff})
 local suddendeath = CV_RegisterVar({"br_suddendeath", "On", CV_NETVAR, CV_OnOff})
 local countdown = 30
@@ -42,6 +45,7 @@ addHook("PlayerSpawn", function(player)
         if pityshield.value then
             player.powers[pw_shield] = SH_PITY
         end
+        player.powers[pw_invulnerability] = timeleft * TICRATE
     end
 end)
 
@@ -56,9 +60,6 @@ end, MT_PLAYER)
 
 addHook("ShouldDamage", function(target, inflictor, source, damage, damagetype)
     if (gametype == GT_BATTLEROYALE and check_source(source, target) and num_seconds() <= countdown) then
-        if source.type != nil and source.type == MT_PLAYER then
-            CONS_Printf(source.player, "You can't harm this player yet. Wait for the end of the countdown.")
-        end
         return false
     else
         return nil
