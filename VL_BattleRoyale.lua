@@ -1,6 +1,3 @@
--- TODO
--- end match also when second last player leaves
-
 local pityshield = CV_RegisterVar({"br_pityshield", "Off", CV_NETVAR, CV_OnOff})
 local suddendeath = CV_RegisterVar({"br_suddendeath", "On", CV_NETVAR, CV_OnOff})
 local countdown = 30
@@ -21,7 +18,7 @@ end
 local alive_players = function()
     local count = 0
     for player in players.iterate
-        if not player.spectator then
+        if player.valid and not player.spectator then
             count = count + 1 
         end
     end
@@ -32,9 +29,17 @@ local num_seconds = function()
     return leveltime / TICRATE
 end
 
-local winner = function()
+local endgame = function()
     return alive_players() <= 1 and num_seconds() > countdown
 end
+
+addHook("ThinkFrame", do
+    if gametype == GT_BATTLEROYALE then
+        if endgame() then
+            G_ExitLevel()
+        end
+    end
+end)
 
 addHook("PlayerSpawn", function(player)
     if gametype == GT_BATTLEROYALE and not player.spectator then
@@ -52,9 +57,6 @@ end)
 addHook("MobjDeath", function(target, inflictor, source, damage, damagetype)
     if (gametype == GT_BATTLEROYALE and target.player) then
         target.player.spectator = true
-        if alive_players() <= 1 then
-            G_ExitLevel()
-        end
     end
 end, MT_PLAYER)
 
@@ -76,7 +78,7 @@ addHook("MobjDamage", function(target, inflictor, source, damage, damagetype)
 end, MT_PLAYER)
 
 addHook("TeamSwitch", function(player, team, fromspectators, autobalance, scramble)
-    if (gametype == GT_BATTLEROYALE and num_seconds() > countdown) then
+    if (gametype == GT_BATTLEROYALE and num_seconds() > countdown and fromspectators) then
         return false
     else
         return nil
