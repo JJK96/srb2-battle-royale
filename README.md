@@ -1,4 +1,4 @@
-# srb2-battle-royale
+# Srb2 Battle Royale
 
 Battle Royale mod for SRB2
 
