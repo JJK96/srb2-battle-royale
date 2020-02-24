@@ -1,7 +1,7 @@
 local pityshield = CV_RegisterVar({"br_pityshield", "Off", CV_NETVAR, CV_OnOff})
 local suddendeath = CV_RegisterVar({"br_suddendeath", "On", CV_NETVAR, CV_OnOff})
 local battleroyale = CV_RegisterVar({"battleroyale", "Off", CV_NETVAR, CV_OnOff})
-local countdown = 30
+local countdown = CV_FindVar("hidetime")
 
 G_AddGametype({
     name = "Battle Royale",
@@ -31,7 +31,7 @@ local num_seconds = function()
 end
 
 local endgame = function()
-    return alive_players() <= 1 and num_seconds() > countdown
+    return alive_players() <= 1 and num_seconds() > countdown.value
 end
 
 local is_battleroyale = do
@@ -48,7 +48,7 @@ end)
 
 addHook("PlayerSpawn", function(player)
     if is_battleroyale() and not player.spectator then
-        local timeleft = countdown - num_seconds()
+        local timeleft = countdown.value - num_seconds()
         if timeleft > 0 then
             chatprintf(player, string.format("You have %d seconds left to gear up", timeleft))
         end
@@ -66,7 +66,7 @@ addHook("MobjDeath", function(target, inflictor, source, damage, damagetype)
 end, MT_PLAYER)
 
 addHook("ShouldDamage", function(target, inflictor, source, damage, damagetype)
-    if (is_battleroyale() and check_source(source, target) and num_seconds() <= countdown) then
+    if (is_battleroyale() and check_source(source, target) and num_seconds() <= countdown.value) then
         return false
     else
         return nil
@@ -83,7 +83,7 @@ addHook("MobjDamage", function(target, inflictor, source, damage, damagetype)
 end, MT_PLAYER)
 
 addHook("TeamSwitch", function(player, team, fromspectators, autobalance, scramble)
-    if (is_battleroyale() and num_seconds() > countdown and fromspectators) then
+    if (is_battleroyale() and num_seconds() > countdown.value and fromspectators) then
         return false
     else
         return nil
