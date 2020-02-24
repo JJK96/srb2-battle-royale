@@ -8,8 +8,8 @@ Battle Royale mod for SRB2
 
 ## Install
 
-Rename the file to VL_BattleRoyale-v`<version>`.lua where `<version>` is the current version as described by the last commit with a version number.
-Put the file in the srb2 wad folder and load it in the game.
+- Rename the file to VL_BattleRoyale-v`<version>`.lua where `<version>` is the latest release version.
+- Put the file in the srb2 wad folder and load it in the game.
 
 ## Usage
 
@@ -21,6 +21,7 @@ Start a new game of the gametype Battle Royale.
 |-------|---------------|-------|-----|
 |br_suddendeath|On/Off|On|Rings do not prevent death, helps to end games faster|
 |br_pityshield|On/Off|Off|Every player spawns with a shield|
+|battleroyale|On/Off|Off|Enable Battle Royale mode in other gametypes|
 
 ## Gameplay
 
