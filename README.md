@@ -21,6 +21,7 @@ Start a new game of the gametype Battle Royale.
 |-------|---------------|-------|-----|
 |br_suddendeath|On/Off|On|Rings do not prevent death, helps to end games faster|
 |br_pityshield|On/Off|Off|Every player spawns with a shield|
+|battleroyale|On/Off|Off|Enable Battle Royale mode in other gametypes|
 
 ## Gameplay
 
