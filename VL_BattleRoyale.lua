@@ -26,12 +26,30 @@ local alive_players = function()
     return count
 end
 
+local one_team = do
+    local red = 0
+    local blue = 0
+    for player in players.iterate
+        if player.valid and not player.spectator then
+            if player.ctfteam == 1 then
+                red = red + 1
+            elseif player.ctfteam == 0 then
+                blue = blue + 1
+            end
+        end
+    end
+    return red == 0 or blue == 0
+end
+
 local num_seconds = function()
     return leveltime / TICRATE
 end
 
-local endgame = function()
-    return alive_players() <= 1 and num_seconds() > countdown.value
+local endgame = do
+    return (alive_players() <= 1
+            or (G_GametypeHasTeams()
+                and one_team()))
+        and num_seconds() > countdown.value
 end
 
 local is_battleroyale = do
