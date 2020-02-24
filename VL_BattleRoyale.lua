@@ -1,5 +1,6 @@
 local pityshield = CV_RegisterVar({"br_pityshield", "Off", CV_NETVAR, CV_OnOff})
 local suddendeath = CV_RegisterVar({"br_suddendeath", "On", CV_NETVAR, CV_OnOff})
+local battleroyale = CV_RegisterVar({"battleroyale", "Off", CV_NETVAR, CV_OnOff})
 local countdown = 30
 
 G_AddGametype({
@@ -33,8 +34,12 @@ local endgame = function()
     return alive_players() <= 1 and num_seconds() > countdown
 end
 
+local is_battleroyale = do
+    return battleroyale.value or gametype == GT_BATTLEROYALE
+end
+
 addHook("ThinkFrame", do
-    if gametype == GT_BATTLEROYALE then
+    if is_battleroyale() then
         if endgame() then
             G_ExitLevel()
         end
@@ -42,7 +47,7 @@ addHook("ThinkFrame", do
 end)
 
 addHook("PlayerSpawn", function(player)
-    if gametype == GT_BATTLEROYALE and not player.spectator then
+    if is_battleroyale() and not player.spectator then
         local timeleft = countdown - num_seconds()
         if timeleft > 0 then
             chatprintf(player, string.format("You have %d seconds left to gear up", timeleft))
@@ -55,13 +60,13 @@ addHook("PlayerSpawn", function(player)
 end)
 
 addHook("MobjDeath", function(target, inflictor, source, damage, damagetype)
-    if (gametype == GT_BATTLEROYALE and target.player) then
+    if (is_battleroyale() and target.player) then
         target.player.spectator = true
     end
 end, MT_PLAYER)
 
 addHook("ShouldDamage", function(target, inflictor, source, damage, damagetype)
-    if (gametype == GT_BATTLEROYALE and check_source(source, target) and num_seconds() <= countdown) then
+    if (is_battleroyale() and check_source(source, target) and num_seconds() <= countdown) then
         return false
     else
         return nil
@@ -69,7 +74,7 @@ addHook("ShouldDamage", function(target, inflictor, source, damage, damagetype)
 end, MT_PLAYER)
 
 addHook("MobjDamage", function(target, inflictor, source, damage, damagetype)
-    if (gametype == GT_BATTLEROYALE
+    if (is_battleroyale()
         and suddendeath.value
         and check_source(source, target)
         and target.player.powers[pw_shield] == SH_NONE) then
@@ -78,7 +83,7 @@ addHook("MobjDamage", function(target, inflictor, source, damage, damagetype)
 end, MT_PLAYER)
 
 addHook("TeamSwitch", function(player, team, fromspectators, autobalance, scramble)
-    if (gametype == GT_BATTLEROYALE and num_seconds() > countdown and fromspectators) then
+    if (is_battleroyale() and num_seconds() > countdown and fromspectators) then
         return false
     else
         return nil
