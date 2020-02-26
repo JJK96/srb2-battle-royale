@@ -33,7 +33,7 @@ local one_team = do
         if player.valid and not player.spectator then
             if player.ctfteam == 1 then
                 red = red + 1
-            elseif player.ctfteam == 0 then
+            elseif player.ctfteam == 2 then
                 blue = blue + 1
             end
         end
